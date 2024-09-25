@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Mi pagina web</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+</head>
+<script>
+    $(document).ready(function(){
+      $('#btn1').click(function() {
+      var usuario = $('#usuario').val();  // Obtener el nombre del usuario
+
+      // URL para acceder a los repositorios del usuario
+      var url = 'https://api.github.com/users/' + usuario + '/repos';
+
+      // Realizamos la petición AJAX
+      $.ajax({
+          url: url,
+          method: 'GET',
+          success: function(repos) {
+            // Limpiamos el contenedor de resultados
+            $('#repos').empty();
+
+            // Verificamos si el usuario tiene repositorios
+            if (repos.length === 0) {
+              $('#repos').append('<p>No se encontraron repositorios para este usuario.</p>');
+              return;
+            }
+            // Recorremos los repositorios obtenidos
+            repos.forEach(function(repo) {
+              // Estructura HTML para cada repositorio
+              var repoElement = `
+                <div class="row">
+                  <div class="col-sm-4" style="background-color:lavender;">${repo.name}</div>
+                  <div class="col-sm-4" style="background-color:lavenderblush;">${repo.description || 'Sin descripción'}</div>
+                  <div class="col-sm-4" style="background-color:lightgray;">Estrellas:</strong> ${repo.stargazers_count}</div>
+                </div>
+              `;
+
+              // Añadimos el repositorio al contenedor
+              $('#repos').append(repoElement);
+            });
+          },
+          error: function() {
+            // Si ocurre un error (usuario no encontrado, etc.)
+            $('#repos').html('<p>Error al obtener los repositorios. Verifica el nombre de usuario.</p>');
+          }
+        });
+      });
+    });
+</script>
+<body>
+<div class="github">
+    <h1>Consulta de Repositorios de Github</h1>
+    <p>Escrive un usuario de GitHub: <input type="text" id="usuario"></p>
+
+    <button id="btn1">Dale al boton</button>
+
+    <!-- Sección donde se mostrarán los resultados -->
+    <div id="repos" class="container-fluid"> </div>
+</div>
+</body>
+</html>
